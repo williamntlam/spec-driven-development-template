@@ -1,0 +1,268 @@
+# ==============================================================================
+# MASTER CONTEXT SYNC MANIFEST + TASK ROUTER
+# ==============================================================================
+# Respect project.json → agent_context.mode:
+#   full    — treat global_context as a load catalog; layers/checklist optional
+#   layered — L0 first; then checklist + task_routes (do not preload everything)
+# See .context/AGENT.md.
+
+version: "2.0.0"
+last_updated: "2026-08-08"
+
+system_state:
+  environment: "development"
+  active_sprint: "bootstrap"
+
+# ------------------------------------------------------------------------------
+# Read policy — what is mandatory vs routed
+# ------------------------------------------------------------------------------
+read_policy:
+  L0_entrypoint:
+    when: "always"
+    paths:
+      - ".context/AGENT.md"
+      - ".context/project.json"
+      - ".context/sync-manifest.yaml"
+
+  L1_session:
+    when: "always_for_repo_work"
+    paths:
+      - ".context/session/context.md"
+    optional_when:
+      - condition: "triage, PR follow-ups, or unscoped ideas"
+        paths:
+          - ".context/session/inbox.md"
+      - condition: "intake started or checklist exists for the task"
+        paths:
+          - ".context/session/CONTEXT_CHECKLIST.md"
+
+  L2_invariants:
+    when: "always_for_code_or_contract_changes"
+    paths:
+      - ".context/domain/rules.yaml"
+    also: "active specs in specs_index (status draft|in_progress) that touch the task"
+
+  L3_routed:
+    when: "only_when_listed_in_context_checklist_includes"
+    note: >
+      Phase A proposes routes/includes in session/CONTEXT_CHECKLIST.md.
+      Phase B loads those includes (union of matched task_routes). Do not read unmatched groups.
+
+# ------------------------------------------------------------------------------
+# Task routes — L3 deep dives (match → read)
+# ------------------------------------------------------------------------------
+task_routes:
+  - id: "domain_naming"
+    match_any:
+      - "naming domain types, tables, API resources, or UI copy for entities"
+      - "introducing a new domain term"
+    required_paths:
+      - ".context/domain/glossary.yaml"
+
+  - id: "durable_data"
+    match_any:
+      - "database schema, migrations, columns, enums"
+      - "new or changed durable entities / relationships"
+      - "request/response payloads backed by persisted fields"
+    required_paths:
+      - ".context/domain/SCHEMA.md"
+      - ".context/domain/fields.yaml"
+
+  - id: "env_config"
+    match_any:
+      - "new environment variables"
+      - "secrets or runtime configuration"
+    required_paths:
+      - ".context/domain/fields.yaml"
+
+  - id: "code_structure"
+    match_any:
+      - "new modules, services, or layered architecture choices"
+      - "refactors that change project structure or conventions"
+    required_paths:
+      - ".context/engineering/PATTERNS.md"
+
+  - id: "ui_design"
+    match_any:
+      - "UI, frontend layout, visual design, components, accessibility"
+    required_paths:
+      - ".context/engineering/design.md"
+      - ".context/engineering/PATTERNS.md"
+
+  - id: "observability"
+    match_any:
+      - "logging, metrics, tracing, error reporting"
+    required_paths:
+      - ".context/engineering/sentry.md"
+
+  - id: "feature_flags"
+    match_any:
+      - "feature flags, gradual rollout, gated capabilities"
+    required_paths:
+      - ".context/platform/features.yaml"
+
+  - id: "dependencies"
+    match_any:
+      - "internal services/packages"
+      - "third-party APIs or SDKs"
+      - "rate limits for external calls"
+    required_paths:
+      - ".context/platform/dependencies.yaml"
+
+  - id: "infrastructure"
+    match_any:
+      - "databases, caches, object storage, network topology"
+      - "connection strings, ports, SSL requirements"
+    required_paths:
+      - ".context/platform/connections.yaml"
+      - ".context/platform/dependencies.yaml"
+
+  - id: "auth_security"
+    match_any:
+      - "authentication, authorization, RBAC"
+      - "payments, PII, or security-sensitive behavior"
+    required_paths:
+      - ".context/domain/rules.yaml"
+      - ".context/engineering/sentry.md"
+      - ".context/engineering/PATTERNS.md"
+    note: "Also pull durable_data / env_config routes if schema or secrets change."
+
+  - id: "intake"
+    match_any:
+      - "intake"
+      - "context checklist"
+      - "what context do we need"
+      - "decide relevant context"
+      - "plan before spec"
+    required_paths:
+      - ".context/session/_templates/CONTEXT_CHECKLIST.md"
+      - ".context/session/context.md"
+      - ".context/sync-manifest.yaml"
+    note: "Phase A only — write session/CONTEXT_CHECKLIST.md; do not draft specs or code."
+
+  - id: "create_spec"
+    match_any:
+      - "create a spec for"
+      - "author a new feature specification"
+    required_paths:
+      - ".context/session/CONTEXT_CHECKLIST.md"
+      - ".context/session/_templates/CONTEXT_CHECKLIST.md"
+      - ".context/specs/_templates/TEMPLATE.md"
+      - ".context/specs/_templates/TEMPLATE.yaml"
+      - ".context/session/context.md"
+    note: "Run Intake Phases A–B before writing spec.md/spec.yaml."
+
+  - id: "implementation_prompt"
+    match_any:
+      - "write an implementation prompt"
+      - "form a prompt for implementation"
+      - "execution prompt"
+    required_paths:
+      - ".context/session/CONTEXT_CHECKLIST.md"
+      - ".context/domain/rules.yaml"
+    note: "Phase C outcome = implementation_prompt; load checklist includes first."
+
+# ------------------------------------------------------------------------------
+# File registry — discovery catalog (not a mandatory read list)
+# ------------------------------------------------------------------------------
+global_context:
+  - path: ".context/project.json"
+    type: "system_metadata"
+    group: "root"
+    layer: "L0"
+    status: "active"
+  - path: ".context/AGENT.md"
+    type: "agent_directives"
+    group: "root"
+    layer: "L0"
+    status: "active"
+  - path: ".context/sync-manifest.yaml"
+    type: "manifest_router"
+    group: "root"
+    layer: "L0"
+    status: "active"
+
+  - path: ".context/session/context.md"
+    type: "session_briefing"
+    group: "session"
+    layer: "L1"
+    status: "active"
+  - path: ".context/session/inbox.md"
+    type: "triage_inbox"
+    group: "session"
+    layer: "L1"
+    status: "active"
+  - path: ".context/session/CONTEXT_CHECKLIST.md"
+    type: "context_checklist"
+    group: "session"
+    layer: "L1"
+    status: "active"
+  - path: ".context/session/_templates/CONTEXT_CHECKLIST.md"
+    type: "context_checklist_template"
+    group: "session"
+    layer: "L3"
+    status: "active"
+
+  - path: ".context/domain/rules.yaml"
+    type: "business_rules"
+    group: "domain"
+    layer: "L2"
+    status: "active"
+  - path: ".context/domain/SCHEMA.md"
+    type: "domain_schema"
+    group: "domain"
+    layer: "L3"
+    status: "placeholder"
+  - path: ".context/domain/glossary.yaml"
+    type: "domain_glossary"
+    group: "domain"
+    layer: "L3"
+    status: "placeholder"
+  - path: ".context/domain/fields.yaml"
+    type: "fields_contract"
+    group: "domain"
+    layer: "L3"
+    status: "placeholder"
+
+  - path: ".context/engineering/PATTERNS.md"
+    type: "codebase_invariants"
+    group: "engineering"
+    layer: "L3"
+    status: "active"
+  - path: ".context/engineering/design.md"
+    type: "design_system"
+    group: "engineering"
+    layer: "L3"
+    status: "placeholder"
+  - path: ".context/engineering/sentry.md"
+    type: "observability"
+    group: "engineering"
+    layer: "L3"
+    status: "active"
+
+  - path: ".context/platform/features.yaml"
+    type: "feature_flags"
+    group: "platform"
+    layer: "L3"
+    status: "placeholder"
+  - path: ".context/platform/dependencies.yaml"
+    type: "dependency_topology"
+    group: "platform"
+    layer: "L3"
+    status: "placeholder"
+  - path: ".context/platform/connections.yaml"
+    type: "infrastructure_topology"
+    group: "platform"
+    layer: "L3"
+    status: "placeholder"
+
+# ------------------------------------------------------------------------------
+# Specs index
+# ------------------------------------------------------------------------------
+specs_index: []
+  # - id: "001"
+  #   slug: "001-user-authentication"
+  #   folder: ".context/specs/001-user-authentication/"
+  #   md_path: ".context/specs/001-user-authentication/spec.md"
+  #   yaml_path: ".context/specs/001-user-authentication/spec.yaml"
+  #   status: "draft"  # draft | in_progress | implemented | deprecated

@@ -1,0 +1,41 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors / IDEs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# Dependencies / build (language-agnostic starters)
+node_modules/
+dist/
+build/
+coverage/
+.turbo/
+.next/
+.venv/
+venv/
+__pycache__/
+*.pyc
+target/
+vendor/
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+*.pem
+credentials.json
+service-account*.json
+
+# Logs
+*.log
+logs/
+
+# Misc
+.cache/
+tmp/
+temp/

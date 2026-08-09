@@ -1,0 +1,74 @@
+# ==============================================================================
+# SPECIFICATION SCHEMA CONTRACT
+# ==============================================================================
+id: "<number>"                          # e.g. "001"
+slug: "<number>-<describe-topic>"       # e.g. "001-user-authentication"
+name: "<describe-topic>"                # e.g. "user-authentication"
+version: "0.1.0"
+status: "draft"                         # Options: draft | in_progress | implemented | deprecated
+created_at: "{{YYYY-MM-DD}}"
+updated_at: "{{YYYY-MM-DD}}"
+
+author:
+  name: "{{AUTHOR_NAME}}"
+  email: "{{AUTHOR_EMAIL}}"
+
+# High-level overview (1-2 sentences)
+summary: >
+  Concise explanation of the capability or feature introduced by this spec.
+
+# Business & Engineering Directives
+goals:
+  - "Primary objective 1"
+  - "Primary objective 2"
+
+non_goals:
+  - "Explicitly out of scope item 1"
+  - "Explicitly out of scope item 2"
+
+# System Invariants & Constraints
+constraints:
+  stack:
+    - language: "typescript"
+    - framework: "nextjs"
+  performance:
+    - latency_p95: "< 200ms"
+    - throughput: "1000 req/sec"
+  security:
+    - auth_required: true
+    - rbac_roles: ["admin", "user"]
+
+# Data Architecture Impacts
+data_model:
+  durable_tables:
+    - table_name: "users"
+      action: "modify"
+      fields_added: ["two_factor_enabled"]
+  ephemeral_cache:
+    - key_pattern: "session:{user_id}"
+      ttl_seconds: 3600
+
+# Endpoint Specifications
+apis:
+  - method: "POST"
+    path: "/api/v1/auth/login"
+    summary: "Authenticate user and issue JWT"
+    request_body_ref: ".context/domain/fields.yaml#auth_login_payload"
+    responses:
+      200: "Session tokens returned"
+      401: "Invalid credentials"
+
+# Sequence / Flow Steps
+flows:
+  primary_execution:
+    - step: 1
+      action: "Receive payload and validate against fields.yaml schema"
+    - step: 2
+      action: "Verify password hash against database"
+    - step: 3
+      action: "Issue HTTP-only auth cookie and return user profile"
+
+# Cross-References
+related_docs:
+  - ".context/domain/SCHEMA.md"
+  - ".context/domain/rules.yaml#R001"

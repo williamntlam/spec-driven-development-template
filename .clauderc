@@ -1,0 +1,8 @@
+# Spec-Driven Development (SDD)
+
+Read `.context/project.json` → `agent_context.mode`, then follow `.context/AGENT.md`.
+
+- `full` — broad .context/ load; no layer/checklist gates
+- `layered` — L0→L3 + CONTEXT_CHECKLIST intake + task_routes
+
+Spec templates: `.context/specs/_templates/`

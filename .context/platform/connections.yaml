@@ -1,0 +1,45 @@
+# ==============================================================================
+# NETWORK & INFRASTRUCTURE TOPOLOGY
+# ==============================================================================
+# Hostnames, ports, SSL requirements, and drivers.
+# Do not commit real production secrets — reference env vars from domain/fields.yaml.
+
+version: "2.0.0"
+last_updated: "2026-08-08"
+
+connections:
+  database_primary:
+    kind: "database"
+    driver: "postgresql"
+    host_env: "DATABASE_HOST"
+    port: 5432
+    database_env: "DATABASE_NAME"
+    user_env: "DATABASE_USER"
+    password_env: "DATABASE_PASSWORD"
+    # Prefer a single URL when available:
+    url_env: "DATABASE_URL"
+    ssl:
+      required: true
+      mode: "require"
+    notes: "Primary OLTP database"
+
+  redis_primary:
+    kind: "cache"
+    driver: "redis"
+    url_env: "REDIS_URL"
+    port: 6379
+    ssl:
+      required: false
+    notes: "Optional cache / session store"
+
+  object_storage:
+    kind: "object_storage"
+    provider: "s3_compatible"
+    endpoint_env: "S3_ENDPOINT"
+    bucket_env: "S3_BUCKET"
+    access_key_env: "S3_ACCESS_KEY_ID"
+    secret_key_env: "S3_SECRET_ACCESS_KEY"
+    region_env: "S3_REGION"
+    ssl:
+      required: true
+    notes: "S3/R2-compatible object storage (optional)"

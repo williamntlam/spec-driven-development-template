@@ -1,0 +1,6 @@
+# Enables "Use this template" customization on GitHub when the repository
+# is marked as a template repository in Settings → General → Template repository.
+#
+# https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
+
+include_all_branches: false

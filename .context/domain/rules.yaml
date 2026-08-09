@@ -1,0 +1,51 @@
+# ==============================================================================
+# BUSINESS RULES — MUST NEVER BE BYPASSED
+# ==============================================================================
+# Invariable constraints. Code generation and refactors must honor these.
+
+version: "2.0.0"
+last_updated: "2026-08-08"
+
+rules:
+  - id: "R001"
+    name: "No undocumented secrets"
+    severity: "critical"
+    description: >
+      Environment variables that contain secrets must be declared in
+      .context/domain/fields.yaml with secret: true before use in code.
+    enforcement: "required"
+
+  - id: "R002"
+    name: "No PII in logs"
+    severity: "critical"
+    description: >
+      Logs, metrics, and error reports must not include emails, phone numbers,
+      payment data, passwords, tokens, or raw authentication headers.
+    enforcement: "required"
+    related_docs:
+      - ".context/engineering/sentry.md"
+
+  - id: "R003"
+    name: "Auth required for mutating APIs"
+    severity: "high"
+    description: >
+      Unless a spec explicitly marks an endpoint as public, mutating HTTP methods
+      (POST, PUT, PATCH, DELETE) must require authentication.
+    enforcement: "required"
+
+  - id: "R004"
+    name: "Spec before durable schema change"
+    severity: "high"
+    description: >
+      Changes to durable tables, enums, or public API contracts require an
+      in-progress or new numbered spec under .context/specs/ and updates to
+      domain/fields.yaml / domain/SCHEMA.md.
+    enforcement: "required"
+
+  - id: "R005"
+    name: "Glossary-aligned naming"
+    severity: "medium"
+    description: >
+      Domain types, table names, and API resource names must use terms defined
+      in .context/domain/glossary.yaml. Do not invent synonyms.
+    enforcement: "required"

@@ -1,0 +1,64 @@
+{
+  "$schema_version": "2.0.0",
+  "name": "{{PROJECT_NAME}}",
+  "description": "Spec-Driven Development template repository — replace with your product description.",
+  "version": "0.1.0",
+  "context_schema_version": "2.0.0",
+  "license": "MIT",
+  "repository": {
+    "url": "{{REPOSITORY_URL}}",
+    "default_branch": "main"
+  },
+  "owners": [
+    {
+      "name": "{{AUTHOR_NAME}}",
+      "email": "{{AUTHOR_EMAIL}}",
+      "role": "maintainer"
+    }
+  ],
+  "environments": [
+    "development",
+    "staging",
+    "production"
+  ],
+  "stack": {
+    "languages": ["{{PRIMARY_LANGUAGE}}"],
+    "frameworks": ["{{PRIMARY_FRAMEWORK}}"],
+    "package_managers": ["{{PACKAGE_MANAGER}}"],
+    "runtime_targets": ["{{RUNTIME_TARGET}}"],
+    "build_toolchains": ["{{BUILD_TOOLCHAIN}}"]
+  },
+  "paths": {
+    "context_root": ".context",
+    "session_root": ".context/session",
+    "domain_root": ".context/domain",
+    "engineering_root": ".context/engineering",
+    "platform_root": ".context/platform",
+    "specs_root": ".context/specs",
+    "templates_root": ".context/specs/_templates",
+    "sync_manifest": ".context/sync-manifest.yaml"
+  },
+  "conventions": {
+    "spec_number_padding": 3,
+    "spec_statuses": ["draft", "in_progress", "implemented", "deprecated"],
+    "dual_representation": true
+  },
+  "agent_context": {
+    "mode": "full",
+    "modes": {
+      "full": {
+        "summary": "Load as much .context/ as practical. No L0–L3 gating. Context Checklist optional.",
+        "use_layers": false,
+        "use_checklist_intake": false,
+        "use_task_routes": false
+      },
+      "layered": {
+        "summary": "L0→L3 layered reads + task_routes. Context Checklist intake before drafting specs/prompts.",
+        "use_layers": true,
+        "use_checklist_intake": true,
+        "use_task_routes": true
+      }
+    },
+    "notes": "Set agent_context.mode to \"full\" or \"layered\". Agents must read this field from project.json before choosing an ingestion strategy."
+  }
+}

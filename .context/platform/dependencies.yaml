@@ -1,0 +1,38 @@
+# ==============================================================================
+# SERVICE TOPOLOGY & DEPENDENCIES
+# ==============================================================================
+# Maps internal packages/services, external APIs, and rate limits.
+
+version: "2.0.0"
+last_updated: "2026-08-08"
+
+internal_services:
+  - name: "api"
+    description: "Primary application API (placeholder)"
+    path: "{{API_PACKAGE_PATH}}"
+    depends_on:
+      - "database"
+      - "cache"
+
+internal_packages: []
+
+external_apis:
+  - name: "example_vendor"
+    description: "Placeholder third-party API — replace or remove"
+    base_url: "https://api.example.com"
+    auth: "bearer_token"
+    rate_limit:
+      requests_per_minute: 60
+      notes: "Confirm vendor limits before production traffic"
+    env_refs:
+      - "EXAMPLE_VENDOR_API_KEY"
+
+infrastructure_dependencies:
+  - name: "database"
+    kind: "postgres"
+    required: true
+    connection_ref: ".context/platform/connections.yaml#database_primary"
+  - name: "cache"
+    kind: "redis"
+    required: false
+    connection_ref: ".context/platform/connections.yaml#redis_primary"
