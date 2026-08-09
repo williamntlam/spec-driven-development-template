@@ -1,22 +1,24 @@
-# ==============================================================================
-# FEATURE FLAGS & CAPABILITY ROLLOUT
-# ==============================================================================
-# Track toggles, percentage rollouts, and deprecation dates.
-# Agents must consult this before shipping gated behavior.
-
 version: "2.0.0"
 last_updated: "2026-08-08"
 
 features:
-  - key: "example_feature"
-    name: "Example Feature"
-    description: "Placeholder flag — replace or remove when adding real capabilities."
+  - key: "bookmark_notes"
+    name: "Bookmark notes"
+    description: "Optional notes field on bookmarks — eval gap until E01"
     enabled: false
     percentage_rollout: 0
-    environments:
-      development: true
-      staging: false
-      production: false
-    owner: "{{AUTHOR_EMAIL}}"
-    deprecation_date: null
+    related_spec: null
+
+  - key: "share_links"
+    name: "Share links"
+    description: "Public token read for a single bookmark — eval gap until E02"
+    enabled: false
+    percentage_rollout: 0
+    related_spec: null
+
+  - key: "bookmark_views"
+    name: "Bookmark views"
+    description: "View counter + logging — eval gap until E03"
+    enabled: false
+    percentage_rollout: 0
     related_spec: null

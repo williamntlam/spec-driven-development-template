@@ -1,74 +1,58 @@
-# Domain Schema
+# Harbor Domain Schema
 
-> Authoritative narrative definition of database entities, relationships, and state machines.
-> Keep column-level contracts in `.context/domain/fields.yaml`; keep this file focused on structure and behavior.
+Column-level contracts: `.context/domain/fields.yaml`.
 
 ---
 
-## 1. Overview
-
-Describe the core domain model for this project. Replace the placeholders below with real entities.
+## Overview
 
 ```text
-[ EntityA ] 1──* [ EntityB ] *──1 [ EntityC ]
+[ User ] 1──* [ Bookmark ]
 ```
 
 ---
 
-## 2. Entities
-
-### Entity: `ExampleEntity`
+## Entity: `User`
 
 | Attribute | Value |
 | :--- | :--- |
-| **Table** | `example_entities` |
+| **Table** | `users` |
 | **Primary Key** | `id` (uuid) |
-| **Purpose** | Placeholder entity — replace with your domain |
-
-#### Fields
 
 | Column | Type | Required | Notes |
 | :--- | :--- | :--- | :--- |
-| `id` | uuid | yes | Stable identifier |
-| `name` | string | yes | Display name |
-| `status` | enum(`draft`, `active`, `archived`) | yes | Lifecycle state |
-| `created_at` | timestamp | yes | Immutable create time |
-| `updated_at` | timestamp | yes | Last mutation time |
-
-#### Relationships
-
-- _(none yet — document foreign keys and cardinalities here)_
+| `id` | uuid | yes | PK |
+| `email` | string | yes | Unique; **PII** — never log |
+| `password_hash` | string | yes | Never return in API responses |
+| `created_at` | timestamp | yes | |
 
 ---
 
-## 3. State Machines
+## Entity: `Bookmark`
 
-### `ExampleEntity.status`
+| Attribute | Value |
+| :--- | :--- |
+| **Table** | `bookmarks` |
+| **Primary Key** | `id` (uuid) |
+| **Owner** | `user_id` → `users.id` |
 
-```text
-draft --> active --> archived
-  |                    ^
-  +--------------------+
-```
-
-| Transition | From | To | Guard |
+| Column | Type | Required | Notes |
 | :--- | :--- | :--- | :--- |
-| `publish` | `draft` | `active` | Validated payload; actor authorized |
-| `archive` | `draft` \| `active` | `archived` | Soft-delete only; no hard delete |
+| `id` | uuid | yes | PK |
+| `user_id` | uuid | yes | FK owner |
+| `url` | string | yes | Absolute URL |
+| `title` | string | yes | Display title |
+| `created_at` | timestamp | yes | |
+| `updated_at` | timestamp | yes | |
+
+### Not implemented (eval gaps)
+
+- `notes` text on bookmarks
+- `ShareLink` entity / public read
+- view/analytics events
 
 ---
 
-## 4. Surface Models
+## State
 
-Describe DTOs / API resource shapes that differ from raw tables (aggregates, projections, public vs internal views).
-
-| Surface | Backed By | Notes |
-| :--- | :--- | :--- |
-| `ExampleResource` | `example_entities` | Public API representation |
-
----
-
-## 5. Migration Notes
-
-- Schema changes must be reflected here **and** in `.context/domain/fields.yaml`.
-- Specs that mutate durable tables must declare `data_model` impacts in `spec.yaml`.
+Bookmarks have no lifecycle enum today — create + delete only.

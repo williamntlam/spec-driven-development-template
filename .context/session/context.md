@@ -1,55 +1,30 @@
 # Active Working Context
 
-> Update this file at the start and end of each significant work session.
-> AI agents and engineers should treat this as the live sprint briefing.
-
 | Attribute | Value |
 | :--- | :--- |
 | **Last Updated** | `2026-08-08` |
-| **Environment** | `development` |
-| **Active Sprint** | `bootstrap` |
-| **Focus** | Repository template bootstrap |
+| **Product** | Harbor (mock bookmarks API) |
+| **Active Sprint** | `eval-ready` |
+| **agent_context.mode** | See `.context/project.json` (default `layered`) |
 
 ---
 
 ## Current Focus
 
-- [x] Bootstrap Spec-Driven Development (SDD) `.context/` system
-- [x] Reorganize `.context/` by access pattern (`session/`, `domain/`, `engineering/`, `platform/`)
-- [x] Adopt layered L0→L3 ingestion + `task_routes` in `sync-manifest.yaml`
-- [x] Add intake-first Context Checklist workflow (relevance → load → draft)
-- [x] Add `agent_context.mode` switch (`full` | `layered`) in `project.json`
-- [ ] Customize `.context/project.json` for this project's stack and identity
-- [ ] Replace placeholder glossary, schema, and rules under `.context/domain/`
-- [ ] Create first feature spec under `.context/specs/`
+- Harbor mock is ready for **agent-runnable context evals** in `/evals`.
+- Intentional product gaps: bookmark `notes`, share links, view analytics.
 
 ---
 
-## Active Specs
+## How to run an eval
 
-| Spec | Status | Notes |
-| :--- | :--- | :--- |
-| _(none yet)_ | — | Create via "create a spec for [topic]" |
-
----
-
-## Active Bugs / Blockers
-
-| ID | Summary | Owner | Notes |
-| :--- | :--- | :--- | :--- |
-| — | None | — | — |
-
----
-
-## Open PRs / Follow-ups
-
-| Item | Link / Path | Next Action |
-| :--- | :--- | :--- |
-| — | — | — |
+1. Open a task in `evals/tasks/`.
+2. Paste the **Agent prompt** into Cursor / Claude Code.
+3. When finished, fill `evals/runs/<task-id>/SCORECARD.md` from the template in the task.
 
 ---
 
 ## Session Notes
 
-- This repository is an SDD template. Replace placeholders before implementing product features.
-- After each meaningful change, sync `sync-manifest.yaml`, relevant YAML contracts, and this file.
+- Rebuild checklist/session focus when starting each new eval task (do not reuse prior task routes).
+- Domain contracts in `.context/domain/` are durable across tasks.

@@ -1,111 +1,60 @@
-# ==============================================================================
-# FIELDS CONTRACT — DB COLUMNS, ENUMS, ENV VARS
-# ==============================================================================
-# Single source of truth for durable fields and environment configuration.
-# Specs should reference entries here instead of inventing ad-hoc shapes.
-
 version: "2.0.0"
 last_updated: "2026-08-08"
 
-enums:
-  example_status:
-    values: ["draft", "active", "archived"]
-    description: "Lifecycle states for ExampleEntity"
+enums: {}
 
 tables:
-  example_entities:
-    description: "Placeholder table — replace with real domain tables"
+  users:
+    description: "Authenticated principals"
     columns:
-      id:
-        type: "uuid"
-        required: true
-        unique: true
-        description: "Primary key"
-      name:
-        type: "string"
-        required: true
-        max_length: 255
-        description: "Display name"
-      status:
-        type: "enum"
-        enum_ref: "example_status"
-        required: true
-        default: "draft"
-      created_at:
-        type: "timestamp"
-        required: true
-      updated_at:
-        type: "timestamp"
-        required: true
+      id: { type: "uuid", required: true, unique: true }
+      email: { type: "string", required: true, unique: true, pii: true, max_length: 320 }
+      password_hash: { type: "string", required: true, secret: true }
+      created_at: { type: "timestamp", required: true }
+
+  bookmarks:
+    description: "User-owned saved URLs"
+    columns:
+      id: { type: "uuid", required: true, unique: true }
+      user_id: { type: "uuid", required: true, fk: "users.id" }
+      url: { type: "string", required: true, max_length: 2048 }
+      title: { type: "string", required: true, max_length: 200 }
+      created_at: { type: "timestamp", required: true }
+      updated_at: { type: "timestamp", required: true }
 
 payloads:
-  example_create_payload:
-    description: "Example create request body"
+  auth_login_payload:
     fields:
-      name:
-        type: "string"
-        required: true
-        max_length: 255
-      status:
-        type: "enum"
-        enum_ref: "example_status"
-        required: false
-        default: "draft"
+      email: { type: "string", required: true }
+      password: { type: "string", required: true }
+  bookmark_create_payload:
+    fields:
+      url: { type: "string", required: true }
+      title: { type: "string", required: true }
 
 env:
-  DATABASE_URL:
-    type: "string"
-    required: true
-    secret: true
-    environments: ["development", "staging", "production"]
-    description: "Primary database connection string"
   APP_ENV:
     type: "string"
     required: true
     secret: false
-    environments: ["development", "staging", "production"]
     allowed_values: ["development", "staging", "production"]
-    description: "Runtime environment name"
+  PORT:
+    type: "string"
+    required: false
+    secret: false
+    default: "3000"
+  DATABASE_URL:
+    type: "string"
+    required: true
+    secret: true
   LOG_LEVEL:
     type: "string"
     required: false
     secret: false
     default: "info"
     allowed_values: ["debug", "info", "warn", "error"]
-    description: "Application log verbosity"
-  REDIS_URL:
+  SESSION_SECRET:
     type: "string"
-    required: false
+    required: true
     secret: true
-    environments: ["development", "staging", "production"]
-    description: "Redis connection URL (optional cache)"
-  S3_ENDPOINT:
-    type: "string"
-    required: false
-    secret: false
-    description: "S3-compatible endpoint URL"
-  S3_BUCKET:
-    type: "string"
-    required: false
-    secret: false
-    description: "Object storage bucket name"
-  S3_ACCESS_KEY_ID:
-    type: "string"
-    required: false
-    secret: true
-    description: "Object storage access key"
-  S3_SECRET_ACCESS_KEY:
-    type: "string"
-    required: false
-    secret: true
-    description: "Object storage secret key"
-  S3_REGION:
-    type: "string"
-    required: false
-    secret: false
-    description: "Object storage region"
-  EXAMPLE_VENDOR_API_KEY:
-    type: "string"
-    required: false
-    secret: true
-    description: "Placeholder third-party API key — remove when unused"
+    description: "Signing / session secret"

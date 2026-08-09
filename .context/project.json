@@ -1,7 +1,7 @@
 {
   "$schema_version": "2.0.0",
-  "name": "{{PROJECT_NAME}}",
-  "description": "Spec-Driven Development template repository — replace with your product description.",
+  "name": "harbor",
+  "description": "Mock bookmarks API for evaluating Spec-Driven Development context management with real LLM agents.",
   "version": "0.1.0",
   "context_schema_version": "2.0.0",
   "license": "MIT",
@@ -11,22 +11,18 @@
   },
   "owners": [
     {
-      "name": "{{AUTHOR_NAME}}",
-      "email": "{{AUTHOR_EMAIL}}",
+      "name": "Harbor Maintainers",
+      "email": "maintainers@harbor.local",
       "role": "maintainer"
     }
   ],
-  "environments": [
-    "development",
-    "staging",
-    "production"
-  ],
+  "environments": ["development", "staging", "production"],
   "stack": {
-    "languages": ["{{PRIMARY_LANGUAGE}}"],
-    "frameworks": ["{{PRIMARY_FRAMEWORK}}"],
-    "package_managers": ["{{PACKAGE_MANAGER}}"],
-    "runtime_targets": ["{{RUNTIME_TARGET}}"],
-    "build_toolchains": ["{{BUILD_TOOLCHAIN}}"]
+    "languages": ["typescript"],
+    "frameworks": ["node:http"],
+    "package_managers": ["npm"],
+    "runtime_targets": ["node20"],
+    "build_toolchains": ["tsc-optional"]
   },
   "paths": {
     "context_root": ".context",
@@ -36,7 +32,8 @@
     "platform_root": ".context/platform",
     "specs_root": ".context/specs",
     "templates_root": ".context/specs/_templates",
-    "sync_manifest": ".context/sync-manifest.yaml"
+    "sync_manifest": ".context/sync-manifest.yaml",
+    "app_root": "src"
   },
   "conventions": {
     "spec_number_padding": 3,
@@ -44,7 +41,7 @@
     "dual_representation": true
   },
   "agent_context": {
-    "mode": "full",
+    "mode": "layered",
     "modes": {
       "full": {
         "summary": "Load as much .context/ as practical. No L0–L3 gating. Context Checklist optional.",
@@ -59,6 +56,6 @@
         "use_task_routes": true
       }
     },
-    "notes": "Set agent_context.mode to \"full\" or \"layered\". Agents must read this field from project.json before choosing an ingestion strategy."
+    "notes": "For evals, set mode per task in evals/tasks/*.md. Default here is layered."
   }
 }

@@ -39,3 +39,6 @@ logs/
 .cache/
 tmp/
 temp/
+
+# Eval run junk (commit SCORECARD.md files if you want)
+evals/runs/**/tmp/

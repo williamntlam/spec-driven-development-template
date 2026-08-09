@@ -1,70 +1,27 @@
-# Codebase Patterns & Invariants
+# Harbor Codebase Patterns
 
-> Structural rules that apply across the repository. AI agents and contributors must follow these unless a spec explicitly supersedes them.
+## Layout
 
----
+```text
+src/
+  server.ts           # HTTP router
+  config.ts           # env → config
+  lib/db.ts           # data access (in-memory stand-in)
+  lib/auth.ts         # sessions
+  lib/log.ts          # structured logs
+  routes/*.ts         # handlers
+```
 
-## 1. General Principles
+## Rules of the road
 
-- Prefer clarity over cleverness; optimize for readability and reviewability.
-- Keep business rules in services/domain layers — not in controllers, UI handlers, or ad-hoc scripts.
-- Fail closed on security and authorization checks.
-- Prefer small, composable modules with a single responsibility.
-- Do not introduce a second pattern for a concern that already has a repository convention.
+- Keep handlers thin; mutate data through `db.*` helpers.
+- Mutating bookmark routes must call `requireUser`.
+- Log with `log(level, message, fields)` — never put `email` or raw tokens in fields.
+- New env vars → `.context/domain/fields.yaml` first.
+- New durable columns → spec + `fields.yaml` + `SCHEMA.md` + `db.ts` types together.
+- Prefer named exports; match glossary terms (`Bookmark`, not `Link`).
 
----
+## Testing expectation for evals
 
-## 2. Naming Conventions
-
-| Concern | Convention | Example |
-| :--- | :--- | :--- |
-| Files / modules | kebab-case or language idiomatic | `user-service.ts` |
-| Types / classes | PascalCase | `UserAccount` |
-| Functions / methods | camelCase or snake_case per language | `createUser` / `create_user` |
-| Database tables | plural snake_case | `user_accounts` |
-| Database columns | snake_case | `created_at` |
-| Env vars | SCREAMING_SNAKE_CASE | `DATABASE_URL` |
-| Spec folders | `NNN-topic-slug` | `001-user-authentication` |
-| Domain terms | Must match `.context/domain/glossary.yaml` | — |
-
----
-
-## 3. Architecture Patterns
-
-Customize these for your stack. Starter defaults:
-
-- **Layering:** Transport (HTTP/RPC) → Application/Service → Domain → Persistence.
-- **Persistence access:** Use a repository/data-access boundary; do not query the DB from UI or route handlers directly.
-- **Configuration:** Read secrets and environment values via a single config module backed by `.context/domain/fields.yaml` contracts.
-- **Errors:** Map domain errors to stable API/error codes; never leak internal stack traces to clients.
-- **Feature flags:** Gate incomplete or risky behavior via `.context/platform/features.yaml`.
-
----
-
-## 4. Testing Expectations
-
-- Unit-test domain and business-rule logic.
-- Integration-test persistence and external boundaries when feasible.
-- Prefer deterministic fixtures over live third-party calls in CI.
-- New APIs declared in a spec should ship with corresponding tests in the same change set when practical.
-
----
-
-## 5. Anti-Patterns (Do Not)
-
-- Bypass `.context/domain/rules.yaml` invariants "just this once".
-- Introduce undocumented env vars or DB columns.
-- Duplicate glossary terms with synonyms in code (`Customer` vs `User` unless glossary defines both).
-- Export default when the project standard is named exports _(adjust if your stack differs)_.
-- Scatter requirements only in PR descriptions — capture them in specs.
-
----
-
-## 6. Language / Framework Notes
-
-Document stack-specific invariants here after updating `.context/project.json`, for example:
-
-- Package manager and workspace layout
-- Preferred module system
-- HTTP framework middleware order
-- ORM / migration tool conventions
+- After an eval task, types in `src/lib/db.ts` should match `fields.yaml`.
+- API payloads should match declared `payloads` in `fields.yaml` when extended.

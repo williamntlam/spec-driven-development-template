@@ -11,7 +11,8 @@ last_updated: "2026-08-08"
 
 system_state:
   environment: "development"
-  active_sprint: "bootstrap"
+  active_sprint: "eval-ready"
+  product: "harbor"
 
 # ------------------------------------------------------------------------------
 # Read policy — what is mandatory vs routed

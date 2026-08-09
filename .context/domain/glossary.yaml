@@ -1,38 +1,30 @@
-# ==============================================================================
-# DOMAIN GLOSSARY
-# ==============================================================================
-# Universal terminology to eliminate naming ambiguity across code, specs, and UI.
-
 version: "2.0.0"
 last_updated: "2026-08-08"
 
 terms:
-  - term: "Spec"
-    definition: >
-      A numbered, dual-representation feature contract under .context/specs/
-      consisting of a narrative spec.md and a declarative spec.yaml.
-    aliases: ["specification", "RFC"]
-    do_not_confuse_with: ["ticket", "PR description"]
+  - term: "Harbor"
+    definition: "The product — a personal bookmarks API."
+    aliases: ["app", "service"]
 
-  - term: "Context"
-    definition: >
-      The machine- and human-readable project truth stored under .context/,
-      including schemas, rules, patterns, and active working state.
-    aliases: [".context"]
+  - term: "User"
+    definition: "Authenticated human principal with email + password credentials."
+    preferred_code_name: "User"
+    preferred_table_name: "users"
+    do_not_confuse_with: ["Bookmark"]
 
-  - term: "ExampleEntity"
-    definition: >
-      Placeholder domain entity used by the template. Replace with real domain
-      terms before implementation work begins.
-    aliases: []
-    preferred_code_name: "ExampleEntity"
-    preferred_table_name: "example_entities"
+  - term: "Bookmark"
+    definition: "A saved URL owned by exactly one User, with a title."
+    preferred_code_name: "Bookmark"
+    preferred_table_name: "bookmarks"
+    do_not_confuse_with: ["User", "ShareLink"]
 
-  # Example distinctions — customize for your domain:
-  # - term: "User"
-  #   definition: "Authenticated human principal with login credentials."
-  #   do_not_confuse_with: ["Customer", "Account"]
-  # - term: "Customer"
-  #   definition: "Billing or commercial relationship entity; may map to one or more Users."
-  # - term: "Account"
-  #   definition: "Tenant or workspace boundary owning resources and memberships."
+  - term: "ShareLink"
+    definition: >
+      A future public token that can expose a single Bookmark read-only.
+      Not implemented yet — may appear in eval tasks.
+    preferred_code_name: "ShareLink"
+    preferred_table_name: "share_links"
+
+  - term: "Session"
+    definition: "Bearer token mapping to a User id after login."
+    aliases: ["auth token"]

@@ -1,0 +1,14 @@
+{
+  "name": "harbor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mock bookmarks API used to eval Spec-Driven Development context management",
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-strip-types src/server.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
